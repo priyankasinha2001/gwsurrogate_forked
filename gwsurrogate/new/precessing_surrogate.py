@@ -1095,16 +1095,20 @@ Returns:
                 # Truncate timesM if necessary
                 timesM = timesM[timesM >= t0]
         else:
-            ## Interpolate onto uniform domain if needed
             do_interp = True
             if dtM is not None:
                 # If omega_low=0 or None, t0 would have been set to None,
                 # in which case we use the full surrogate length
                 if t0 is None:
                     t0 = self.t_coorb[0]
-                tf = self.t_coorb[-1]
-                num_times = int(np.ceil((tf - t0)/dtM))  # for the purpose of generating nrsur7dq4 at only  the first time index, we will keep dt very high so that (tf-t0)/dt<1, and ceil(tf-t0/dt)=1 
-                timesM = t0 + dtM*np.arange(num_times) # then np.arange(1) will be [0], so essentially we will have timesM = t0
+                
+                # Explicitly check for 0 to return only the initial time step
+                if dtM == 0:
+                    timesM = np.array([t0])
+                else:
+                    tf = self.t_coorb[-1]
+                    num_times = int(np.ceil((tf - t0)/dtM)) 
+                    timesM = t0 + dtM*np.arange(num_times)
 
 
         if do_interp:
