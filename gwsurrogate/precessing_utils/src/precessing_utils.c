@@ -9,7 +9,7 @@
 #    include <numpy/npy_2_compat.h>    /* NumPy≥2.0 shim */
 #  else
      /* NumPy<2.0: stub so PyArray_ImportNumPyAPI() just calls import_array() */
-#    define PyArray_ImportNumPyAPI() (import_array(), 0)
+#    define PyArray_ImportNumPyAPI() ({import_array(); 0;})
 #  endif
 #else
 #  include <numpy/npy_2_compat.h>      // assume its there
