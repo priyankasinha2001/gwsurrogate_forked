@@ -1396,9 +1396,18 @@ Returns:
                 # in which case we use the full surrogate length
                 if t0 is None:
                     t0 = self.t_coorb[0]
-                tf = self.t_coorb[-1]
-                num_times = int(np.ceil((tf - t0)/dtM))
-                timesM = t0 + dtM*np.arange(num_times)
+
+                # Explicitly check for 0 to return only the initial time step.
+                # Used by the time-varying aligned-spin generation, which calls
+                # the surrogate once per precessing time step and needs a single
+                # sample back. Previously achieved by passing a very large dtM so
+                # that ceil((tf-t0)/dtM) == 1; this is the explicit form.
+                if dtM == 0:
+                    timesM = np.array([t0])
+                else:
+                    tf = self.t_coorb[-1]
+                    num_times = int(np.ceil((tf - t0)/dtM))
+                    timesM = t0 + dtM*np.arange(num_times)
 
 
         if do_interp:
